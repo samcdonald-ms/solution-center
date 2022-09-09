@@ -42,6 +42,39 @@
                             "allowedValues": "[parameters('locations')]"
                         },
                         {
+                            "name": "ServicePrincipal",
+                            "type": "Microsoft.Common.ServicePrincipalV2Selector",
+                            "label": {
+                                "password": "Password",
+                                "certificateThumbprint": "Certificate thumbprint",
+                                "authenticationType": "Authentication Type",
+                                "sectionHeader": "Service Principal"
+                            },
+                            "toolTip": {
+                                "servicePrincipal": "Service Principal",
+                                "servicePrincipalType": "Service Principal Type",
+                                "password": "Password",
+                                "certificateThumbprint": "Certificate thumbprint",
+                                "authenticationType": "Authentication Type"
+                            },
+                            "constraints": {
+                                "required": true,
+                                "regex": "^[a-zA-Z0-9]{8,}$",
+                                "validationMessage": "Password must be at least 8 characters long, contain only numbers and letters"
+                            },
+                            "options": {
+                                "hideCertificate": false,
+                                "selectExisting": {
+                                    "appId": ""
+                                },
+                                "createNew": {
+                                    "defaultName": "new app default name",
+                                    "secretType": "Password"
+                                }
+                            },
+                            "visible": true
+                        },
+                        {
                             "name": "vmClientUserName",
                             "type": "Microsoft.Compute.UserNameTextBox",
                             "label": "adminUserNameLabel",
@@ -111,10 +144,10 @@
             "resourceGroupId": "[steps('Create').resourceGroup.value.resourceId]",
             "location": "[steps('Create').location.name]",
             "parameters": {
-                "spnClientId": "[parameters('spnClientId')]",
-                "spnClientSecret": "[parameters('spnClientSecret')]",
-                "spnTenantId": "[parameters('spnTenantId')]",
-                "principalId": "[parameters('principalId')]",
+                "spnClientId": "[steps('Create').ServicePrincipal.appId]",
+                "spnClientSecret": "[steps('Create').ServicePrincipal.password]",
+                "spnTenantId": "[steps('Create').ServicePrincipal.tenantId]",
+                "principalId": "[first(steps('Create').ServicePrincipal.objectId)]",
                 "flavor": "[parameters('flavor')]",
                 "logAnalyticsWorkspaceName": "[parameters('logAnalyticsWorkspaceName')]",
                 "sshRSAPublicKey": "[steps('Create').vmCredentials.sshPublicKey]",
